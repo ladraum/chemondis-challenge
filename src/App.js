@@ -1,14 +1,14 @@
 import React from "react";
 import { HashRouter as Router, Route, Switch } from "react-router-dom";
 
-import Album from './Album/Album';
+import AlbumGrid from './Album/AlbumGrid';
 import NotFound from './NotFound/NotFound';
 
 function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/" exact component={Album} />
+        <Route path="/" exact component={AlbumGrid} />
         <Route component={NotFound} />
       </Switch>
     </Router>
