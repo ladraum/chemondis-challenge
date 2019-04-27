@@ -1,0 +1,8 @@
+{
+  "name": "chemondis-challenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/ladraum/chemondis-challenge.git",
+  "author": "Ricardo MB <ricardomattiazzi@gmail.com>",
+  "license": "MIT"
+}
