@@ -7,8 +7,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Input from '@material-ui/core/Input';
 import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
+import Pagination from "material-ui-flat-pagination";
 
-const PATH_PARAM = 'itemsPerPage';
+const ITEMS_PER_PAGE_PARAM = 'itemsPerPage';
+const OFFSET_PARAM = 'offset';
+const NUMBER_OF_ALBUNS = 100;
 
 const styles = theme => ({
     footer: {
@@ -23,25 +26,41 @@ const styles = theme => ({
 
 function Footer(props) {
     const { classes } = props;
-    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(PATH_PARAM) || 20;
-    
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(ITEMS_PER_PAGE_PARAM) || 20;
+    const offsetFromURL = NavigationHelperService.getValueFromURL(OFFSET_PARAM) || 0;
+
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
+    const [offset, setOffset] = useState(offsetFromURL);
+
+    if (itemsPerPage !== itemsPerPageFromURL) {
+        setItemsPerPage(itemsPerPageFromURL);
+    }
+
+    if (offset !== offsetFromURL) {
+        setOffset(offsetFromURL);
+    }
 
     const updateItemsPerPage = (event) => {
         let newItemsPerPage = event.target.value;
         setItemsPerPage(newItemsPerPage);
-        NavigationHelperService.applyParamToURL(PATH_PARAM, newItemsPerPage);
+        NavigationHelperService.applyParamToURL(ITEMS_PER_PAGE_PARAM, newItemsPerPage);
     };
 
-    if(itemsPerPage !== itemsPerPageFromURL) {
-        setItemsPerPage(itemsPerPageFromURL);
-    }
+    const updateSelectedPage = (event, newOffset) => {
+        setOffset(newOffset);
+        NavigationHelperService.applyParamToURL(OFFSET_PARAM, newOffset);
+    };
 
     return (
         <footer className={classes.footer}>
             <Grid container>
                 <Grid item sm={12} md={10}>
-                    PAGINATION
+                    <Pagination
+                        limit={itemsPerPage}
+                        offset={offset}
+                        total={NUMBER_OF_ALBUNS}
+                        onClick={updateSelectedPage}
+                    />
                 </Grid>
                 <Grid item sm={12} md={2}>
                     <FormControl className={classes.formControl}>
