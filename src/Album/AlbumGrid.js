@@ -11,6 +11,7 @@ import _ from 'lodash';
 import TopMenu from '../Layout/TopMenu';
 import DataLoaderService from '../DataLoader/DataLoaderService';
 import AlbumThumbnail from './AlbumThumbnail';
+import Footer from '../Layout/Footer';
 
 const styles = theme => ({
     layout: {
@@ -112,6 +113,7 @@ const AlbumGrid = (props) => {
             <main>
                 {renderByState()}
             </main>
+            <Footer />
         </React.Fragment>
     );
 };
