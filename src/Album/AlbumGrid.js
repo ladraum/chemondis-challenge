@@ -6,6 +6,8 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+import _ from 'lodash';
+
 import TopMenu from '../Layout/TopMenu';
 import DataLoaderService from '../DataLoader/DataLoaderService';
 import AlbumThumbnail from './AlbumThumbnail';
@@ -37,15 +39,27 @@ const AlbumGrid = (props) => {
     const [isLoaded, setLoaded] = useState(false);
     const [hasErrors, setErrors] = useState(false);
     const [albumList, setAlbumList] = useState([]);
+    const [userList, setUserList] = useState([]);
 
     useEffect(() => {
-        DataLoaderService.load('https://jsonplaceholder.typicode.com/albums?_start=0&_limit=5', setErrors)
+        loadUserList().then(loadAlbumList).finally(() => {
+            setLoaded(true);
+        });
+    }, [setErrors, setUserList, setAlbumList]);
+
+    const loadUserList = () => {
+        return DataLoaderService.load('https://jsonplaceholder.typicode.com/users', setErrors)
+            .then(userListFromServer => {
+                setUserList(userListFromServer);
+            });
+    };
+
+    const loadAlbumList = () => {
+        return DataLoaderService.load('https://jsonplaceholder.typicode.com/albums?_start=0&_limit=5', setErrors)
             .then(albumListFromServer => {
                 setAlbumList(albumListFromServer);
-            }).finally(() => {
-                setLoaded(true);
             });
-    }, [setErrors, setAlbumList]);
+    };
 
     const renderByState = () => {
         if (!isLoaded) {
@@ -55,7 +69,7 @@ const AlbumGrid = (props) => {
             return showErrorsLoadingAlbuns();
         }
         return renderAlbumGrid();
-    }
+    };
 
     const loading = () => {
         return (
@@ -80,9 +94,12 @@ const AlbumGrid = (props) => {
         return (
             <div className={classNames(classes.layout, classes.cardGrid)}>
                 <Grid container spacing={40}>
-                    {albumList.map(albumDetails => (
-                        <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} />
-                    ))}
+                    {albumList.map(albumDetails => {
+                        const owner = _.find(userList, ['id', albumDetails.userId]);
+                        return (
+                            <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} owner={owner} />
+                        )
+                    })}
                 </Grid>
             </div>
         );
