@@ -42,6 +42,7 @@ const AlbumGrid = (props) => {
         DataLoaderService.load('https://jsonplaceholder.typicode.com/albums?_start=0&_limit=5', setErrors)
             .then(albumListFromServer => {
                 setAlbumList(albumListFromServer);
+            }).finally(() => {
                 setLoaded(true);
             });
     }, [setErrors, setAlbumList]);
@@ -80,7 +81,7 @@ const AlbumGrid = (props) => {
             <div className={classNames(classes.layout, classes.cardGrid)}>
                 <Grid container spacing={40}>
                     {albumList.map(albumDetails => (
-                        <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails}/>
+                        <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} />
                     ))}
                 </Grid>
             </div>
