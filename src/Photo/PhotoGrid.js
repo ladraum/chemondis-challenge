@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import _ from 'lodash';
-
 import TopMenu from '../Layout/TopMenu';
 import DataLoaderService from '../DataLoader/DataLoaderService';
-import AlbumThumbnail from './AlbumThumbnail';
+import PhotoThumbnail from './PhotoThumbnail';
 import Footer from '../Layout/Footer';
 import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
 
@@ -25,6 +26,12 @@ const styles = theme => ({
             marginRight: 'auto',
         },
     },
+    card: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: "pointer"
+    },
     cardGrid: {
         padding: `${theme.spacing.unit * 8}px 0`,
     },
@@ -36,41 +43,46 @@ const styles = theme => ({
     }
 });
 
-const AlbumGrid = (props) => {
-    const { classes } = props;
+const PhotoGrid = (props) => {
+    const { classes, match } = props;
     const [isLoaded, setLoaded] = useState(false);
     const [hasErrors, setErrors] = useState(false);
-    const [albumList, setAlbumList] = useState([]);
-    const [userList, setUserList] = useState([]);
+    const [album, setAlbum] = useState({});
+    const [owner, setOwner] = useState({});
+    const [photoList, setPhotoList] = useState([]);
 
-    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.ALBUM.ITEMS_PER_PAGE) || 20;
-    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.ALBUM.OFFSET) || 0;
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.PHOTO.ITEMS_PER_PAGE) || 20;
+    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.PHOTO.OFFSET) || 0;
 
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
     const [offset, setOffset] = useState(offsetFromURL);
 
     useEffect(() => {
         loadAllData();
-    }, [setErrors, setUserList, setAlbumList]);
+    }, [setErrors, setAlbum, setOwner, setPhotoList]);
 
     const loadAllData = () => {
         setLoaded(false);
-        loadUserList().then(loadAlbumList).finally(() => {
+        return loadAlbumAndUserDetails().then(loadPhotoList).finally(() => {
             setLoaded(true);
         });
     };
 
-    const loadUserList = () => {
-        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}users`, setErrors)
-            .then(userListFromServer => {
-                setUserList(userListFromServer);
+    const loadAlbumAndUserDetails = () => {
+        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}albums/${match.params.albumId}`, setErrors)
+            .then(albumFromServer => {
+                return DataLoaderService.load(`${NavigationHelperService.BASE_URL}users/${albumFromServer.userId}`, setErrors)
+                    .then(ownerFromServer => {
+                        setAlbum(albumFromServer);
+                        setOwner(ownerFromServer);
+                    });
             });
     };
 
-    const loadAlbumList = () => {
-        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}albums?_start=${offset}&_limit=${itemsPerPage}`, setErrors)
-            .then(albumListFromServer => {
-                setAlbumList(albumListFromServer);
+    const loadPhotoList = () => {
+        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}photos?albumId=${match.params.albumId}&_start=${offset}&_limit=${itemsPerPage}`, setErrors)
+            .then(photoListFromServer => {
+                return setPhotoList(photoListFromServer);
             });
     };
 
@@ -81,7 +93,7 @@ const AlbumGrid = (props) => {
         if (hasErrors) {
             return showErrorsLoadingAlbuns();
         }
-        return renderAlbumGrid();
+        return renderPhotoGrid();
     };
 
     const loading = () => {
@@ -103,14 +115,26 @@ const AlbumGrid = (props) => {
         );
     };
 
-    const renderAlbumGrid = () => {
+    const renderPhotoGrid = () => {
         return (
             <div className={classNames(classes.layout, classes.cardGrid)}>
                 <Grid container spacing={40}>
-                    {albumList.map(albumDetails => {
-                        const owner = _.find(userList, ['id', albumDetails.userId]);
+                    <Grid item sm={12}>
+                        <Card className={classes.card}>
+                            <CardContent className={classes.cardContent}>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    {album.title}
+                                </Typography>
+                                <Typography>
+                                    Owner: {owner.name}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {photoList.map(photo => {
                         return (
-                            <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} owner={owner} />
+                            <PhotoThumbnail key={photo.id} photoDetails={photo} owner={owner} />
                         )
                     })}
                 </Grid>
@@ -135,13 +159,13 @@ const AlbumGrid = (props) => {
             <main>
                 {renderByState()}
             </main>
-            <Footer type="ALBUM" />
+            <Footer type="PHOTO" />
         </React.Fragment>
     );
 };
 
-AlbumGrid.propTypes = {
+PhotoGrid.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(AlbumGrid);
+export default withStyles(styles)(PhotoGrid);

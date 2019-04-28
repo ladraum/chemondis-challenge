@@ -9,8 +9,6 @@ import Input from '@material-ui/core/Input';
 import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
 import Pagination from "material-ui-flat-pagination";
 
-const NUMBER_OF_ALBUNS = 100;
-
 const styles = theme => ({
     footer: {
         backgroundColor: theme.palette.background.paper,
@@ -23,9 +21,9 @@ const styles = theme => ({
 });
 
 function Footer(props) {
-    const { classes } = props;
-    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.ITEMS_PER_PAGE_PARAM) || 20;
-    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.OFFSET_PARAM) || 0;
+    const { classes, type } = props;
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService[type].ITEMS_PER_PAGE) || 20;
+    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService[type].OFFSET) || 0;
 
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
     const [offset, setOffset] = useState(offsetFromURL);
@@ -41,12 +39,12 @@ function Footer(props) {
     const updateItemsPerPage = (event) => {
         let newItemsPerPage = event.target.value;
         setItemsPerPage(newItemsPerPage);
-        NavigationHelperService.applyParamToURL(NavigationHelperService.ITEMS_PER_PAGE_PARAM, newItemsPerPage);
+        NavigationHelperService.applyParamToURL(NavigationHelperService[type].ITEMS_PER_PAGE, newItemsPerPage);
     };
 
     const updateSelectedPage = (event, newOffset) => {
         setOffset(newOffset);
-        NavigationHelperService.applyParamToURL(NavigationHelperService.OFFSET_PARAM, newOffset);
+        NavigationHelperService.applyParamToURL(NavigationHelperService[type].OFFSET, newOffset);
     };
 
     return (
@@ -56,7 +54,7 @@ function Footer(props) {
                     <Pagination
                         limit={itemsPerPage}
                         offset={offset}
-                        total={NUMBER_OF_ALBUNS}
+                        total={NavigationHelperService[type].TOTAL}
                         onClick={updateSelectedPage}
                     />
                 </Grid>
@@ -81,6 +79,7 @@ function Footer(props) {
 
 Footer.propTypes = {
     classes: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(Footer);

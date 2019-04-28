@@ -1,25 +1,46 @@
-const ITEMS_PER_PAGE_PARAM = 'itemsPerPage';
-const OFFSET_PARAM = 'offset';
-
+const BASE_URL = 'https://jsonplaceholder.typicode.com/';
+const ALBUM = {
+    ITEMS_PER_PAGE: 'albunsPerPage',
+    OFFSET: 'albunsOffset',
+    TOTAL: 100
+};
+const PHOTO = {
+    ITEMS_PER_PAGE: 'photosPerPage',
+    OFFSET: 'photosOffset',
+    TOTAL: 50
+}
 
 const getValueFromURL = (param) => {
-    const hash = window.location.hash;
-    const search = hash.split('?')[1];
+    const pathParts = getURLParts();
+    const search = pathParts[1];
     const urlParams = new URLSearchParams(search);
     return urlParams.get(param);
 };
 
-const applyParamToURL = (param, newValue) => {
+const getURLParts = () => {
     const hash = window.location.hash;
-    const pathParts = hash.split('?');
+    return hash.split('?');
+}
+
+const applyParamToURL = (param, newValue) => {
+    const pathParts = getURLParts();
     const currentPage = pathParts[0];
     const search = pathParts[1];
     const urlParams = new URLSearchParams(search);
     urlParams.set(param, newValue);
-    if(param === ITEMS_PER_PAGE_PARAM) {
-        urlParams.delete(OFFSET_PARAM);
+    if (param === ALBUM.ITEMS_PER_PAGE) {
+        urlParams.delete(ALBUM.OFFSET);
+    }
+    if (param === PHOTO.ITEMS_PER_PAGE) {
+        urlParams.delete(PHOTO.OFFSET);
     }
     window.location.hash = `${currentPage}?${urlParams.toString()}`;
 };
 
-export default { getValueFromURL, applyParamToURL, ITEMS_PER_PAGE_PARAM, OFFSET_PARAM };
+const navigateWithParams = (newURL) => {
+    const pathParts = getURLParts();
+    const search = pathParts[1] ? '?' + pathParts[1] : '';
+    window.location.hash = newURL + search;
+}
+
+export default { BASE_URL, ALBUM, PHOTO, getValueFromURL, applyParamToURL, navigateWithParams };
