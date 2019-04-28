@@ -28,11 +28,18 @@ const styles = theme => ({
 });
 
 const PhotoThumbnail = (props) => {
-    const { classes, photoDetails, owner } = props;
+    const { classes, photoDetails, owner, openModal } = props;
+
+    const openModalWithDetails = () => {
+        openModal({
+            photo: photoDetails,
+            owner
+        });
+    };
 
     return (
         <Grid item sm={6} md={4} lg={3}>
-            <Card className={classes.card}>
+            <Card className={classes.card} onClick={openModalWithDetails}>
                 <img className={classNames(classes.cover)} src={photoDetails.thumbnailUrl} alt={photoDetails.title} />
                 <CardContent className={classes.cardContent}>
                     <Typography>
@@ -47,7 +54,8 @@ const PhotoThumbnail = (props) => {
 PhotoThumbnail.propTypes = {
     classes: PropTypes.object.isRequired,
     photoDetails: PropTypes.object.isRequired,
-    owner: PropTypes.object.isRequired
+    owner: PropTypes.object.isRequired,
+    openModal: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(PhotoThumbnail);

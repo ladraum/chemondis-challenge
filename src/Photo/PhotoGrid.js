@@ -17,6 +17,7 @@ import DataLoaderService from '../DataLoader/DataLoaderService';
 import PhotoThumbnail from './PhotoThumbnail';
 import Footer from '../Layout/Footer';
 import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
+import PhotoModal from './PhotoModal';
 
 const styles = theme => ({
     layout: {
@@ -47,7 +48,7 @@ const styles = theme => ({
     breadcrumbs: {
         padding: `${theme.spacing.unit * 2}px`,
     }
-    });
+});
 
 const PhotoGrid = (props) => {
     const { classes, match } = props;
@@ -63,6 +64,8 @@ const PhotoGrid = (props) => {
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
     const [offset, setOffset] = useState(offsetFromURL);
 
+    const [modalDetails, setModalDetails] = useState({ isOpen: false });
+
     useEffect(() => {
         loadAllData();
     }, [setErrors, setAlbum, setOwner, setPhotoList]);
@@ -75,7 +78,7 @@ const PhotoGrid = (props) => {
     };
 
     const loadAlbumAndUserDetails = () => {
-        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}albums/${match.params.albumId}`, setErrors)
+        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}albums/${getAlbuimId()}`, setErrors)
             .then(albumFromServer => {
                 return DataLoaderService.load(`${NavigationHelperService.BASE_URL}users/${albumFromServer.userId}`, setErrors)
                     .then(ownerFromServer => {
@@ -85,8 +88,12 @@ const PhotoGrid = (props) => {
             });
     };
 
+    const getAlbuimId = () => {
+        return match && match.params ? match.params.albumId : 0;
+    };
+
     const loadPhotoList = () => {
-        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}photos?albumId=${match.params.albumId}&_start=${offset}&_limit=${itemsPerPage}`, setErrors)
+        return DataLoaderService.load(`${NavigationHelperService.BASE_URL}photos?albumId=${getAlbuimId()}&_start=${offset}&_limit=${itemsPerPage}`, setErrors)
             .then(photoListFromServer => {
                 return setPhotoList(photoListFromServer);
             });
@@ -121,6 +128,21 @@ const PhotoGrid = (props) => {
         );
     };
 
+    const openModal = photoToOpen => {
+        setModalDetails({
+            album,
+            owner: photoToOpen.owner,
+            photo: photoToOpen.photo,
+            isOpen: true
+        })
+    };
+
+    const closeModal = () => {
+        setModalDetails({
+            isOpen: false
+        });
+    };
+
     const renderPhotoGrid = () => {
         return (
             <div>
@@ -138,7 +160,7 @@ const PhotoGrid = (props) => {
                             <Card className={classes.card}>
                                 <CardContent className={classes.cardContent}>
                                     <Typography gutterBottom variant="h5" component="h2">
-                                        {album.title}
+                                        Album: {album.title}
                                     </Typography>
                                     <Typography>
                                         Owner: {owner.name}
@@ -149,10 +171,12 @@ const PhotoGrid = (props) => {
 
                         {photoList.map(photo => {
                             return (
-                                <PhotoThumbnail key={photo.id} photoDetails={photo} owner={owner} />
+                                <PhotoThumbnail key={photo.id} photoDetails={photo} owner={owner} openModal={openModal} />
                             )
                         })}
                     </Grid>
+
+                    <PhotoModal modalDetails={modalDetails} closeModal={closeModal} />
                 </div>
             </div>
         );
