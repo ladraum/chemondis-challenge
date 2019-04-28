@@ -8,6 +8,9 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Paper from '@material-ui/core/Paper';
+import Breadcrumbs from '@material-ui/lab/Breadcrumbs';
+import Link from '@material-ui/core/Link';
 
 import TopMenu from '../Layout/TopMenu';
 import DataLoaderService from '../DataLoader/DataLoaderService';
@@ -40,8 +43,11 @@ const styles = theme => ({
     },
     errorMessage: {
         color: '#DC3545'
+    },
+    breadcrumbs: {
+        padding: `${theme.spacing.unit * 2}px`,
     }
-});
+    });
 
 const PhotoGrid = (props) => {
     const { classes, match } = props;
@@ -117,30 +123,44 @@ const PhotoGrid = (props) => {
 
     const renderPhotoGrid = () => {
         return (
-            <div className={classNames(classes.layout, classes.cardGrid)}>
-                <Grid container spacing={40}>
-                    <Grid item sm={12}>
-                        <Card className={classes.card}>
-                            <CardContent className={classes.cardContent}>
-                                <Typography gutterBottom variant="h5" component="h2">
-                                    {album.title}
-                                </Typography>
-                                <Typography>
-                                    Owner: {owner.name}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+            <div>
+                <Paper className={classes.breadcrumbs}>
+                    <Breadcrumbs aria-label="Breadcrumb">
+                        <Link color="inherit" href="javascript:void(0)" onClick={backToAlbumGrid}>
+                            Albuns
+                        </Link>
+                        <Typography color="textPrimary">{album.title}</Typography>
+                    </Breadcrumbs>
+                </Paper>
+                <div className={classNames(classes.layout, classes.cardGrid)}>
+                    <Grid container spacing={40}>
+                        <Grid item sm={12}>
+                            <Card className={classes.card}>
+                                <CardContent className={classes.cardContent}>
+                                    <Typography gutterBottom variant="h5" component="h2">
+                                        {album.title}
+                                    </Typography>
+                                    <Typography>
+                                        Owner: {owner.name}
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
 
-                    {photoList.map(photo => {
-                        return (
-                            <PhotoThumbnail key={photo.id} photoDetails={photo} owner={owner} />
-                        )
-                    })}
-                </Grid>
+                        {photoList.map(photo => {
+                            return (
+                                <PhotoThumbnail key={photo.id} photoDetails={photo} owner={owner} />
+                            )
+                        })}
+                    </Grid>
+                </div>
             </div>
         );
     };
+
+    const backToAlbumGrid = () => {
+        NavigationHelperService.navigateWithParams('#/');
+    }
 
     if (itemsPerPage !== itemsPerPageFromURL) {
         setItemsPerPage(itemsPerPageFromURL);

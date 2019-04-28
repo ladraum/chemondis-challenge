@@ -5,6 +5,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import Breadcrumbs from '@material-ui/lab/Breadcrumbs';
 
 import _ from 'lodash';
 
@@ -33,6 +36,9 @@ const styles = theme => ({
     },
     errorMessage: {
         color: '#DC3545'
+    },
+    breadcrumbs: {
+        padding: `${theme.spacing.unit * 2}px`,
     }
 });
 
@@ -105,15 +111,22 @@ const AlbumGrid = (props) => {
 
     const renderAlbumGrid = () => {
         return (
-            <div className={classNames(classes.layout, classes.cardGrid)}>
-                <Grid container spacing={40}>
-                    {albumList.map(albumDetails => {
-                        const owner = _.find(userList, ['id', albumDetails.userId]);
-                        return (
-                            <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} owner={owner} />
-                        )
-                    })}
-                </Grid>
+            <div>
+                <Paper className={classes.breadcrumbs}>
+                    <Breadcrumbs aria-label="Breadcrumb">
+                        <Typography color="textPrimary">Albuns</Typography>
+                    </Breadcrumbs>
+                </Paper>
+                <div className={classNames(classes.layout, classes.cardGrid)}>
+                    <Grid container spacing={40}>
+                        {albumList.map(albumDetails => {
+                            const owner = _.find(userList, ['id', albumDetails.userId]);
+                            return (
+                                <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails} owner={owner} />
+                            )
+                        })}
+                    </Grid>
+                </div>
             </div>
         );
     };

@@ -39,8 +39,13 @@ const applyParamToURL = (param, newValue) => {
 
 const navigateWithParams = (newURL) => {
     const pathParts = getURLParts();
-    const search = pathParts[1] ? '?' + pathParts[1] : '';
-    window.location.hash = newURL + search;
+    const search = pathParts[1];
+    const urlParams = new URLSearchParams(search);
+    if (newURL === '#/') {
+        urlParams.delete(PHOTO.ITEMS_PER_PAGE);
+        urlParams.delete(PHOTO.OFFSET);
+    }
+    window.location.hash = `${newURL}?${urlParams.toString()}`;
 }
 
 export default { BASE_URL, ALBUM, PHOTO, getValueFromURL, applyParamToURL, navigateWithParams };
