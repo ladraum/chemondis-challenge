@@ -1,17 +1,6 @@
 import service from './NavigationHelperService';
-import axios from 'axios';
-import sinon from 'sinon';
 
 describe('NavigationHelperService', () => {
-    let getStub;
-    beforeEach(() => {
-        getStub = sinon.stub(axios, 'get');
-    });
-
-    afterEach(() => {
-        getStub.restore();
-    });
-
     it('service should have the right signature', () => {
         expect(service.BASE_URL).toBe('https://jsonplaceholder.typicode.com/');
 
