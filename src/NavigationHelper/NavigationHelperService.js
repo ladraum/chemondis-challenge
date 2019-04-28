@@ -16,6 +16,9 @@ const applyParamToURL = (param, newValue) => {
     const search = pathParts[1];
     const urlParams = new URLSearchParams(search);
     urlParams.set(param, newValue);
+    if(param === ITEMS_PER_PAGE_PARAM) {
+        urlParams.delete(OFFSET_PARAM);
+    }
     window.location.hash = `${currentPage}?${urlParams.toString()}`;
 };
 

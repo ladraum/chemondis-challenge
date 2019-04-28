@@ -50,20 +50,16 @@ const AlbumGrid = (props) => {
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
     const [offset, setOffset] = useState(offsetFromURL);
 
-    if (itemsPerPage !== itemsPerPageFromURL) {
-        setItemsPerPage(itemsPerPageFromURL);
-    }
-
-    if (offset !== offsetFromURL) {
-        setOffset(offsetFromURL);
-    }
-
-
     useEffect(() => {
+        loadAllData();
+    }, [setErrors, setUserList, setAlbumList]);
+
+    const loadAllData = () => {
+        setLoaded(false);
         loadUserList().then(loadAlbumList).finally(() => {
             setLoaded(true);
         });
-    }, [setErrors, setUserList, setAlbumList]);
+    };
 
     const loadUserList = () => {
         return DataLoaderService.load('https://jsonplaceholder.typicode.com/users', setErrors)
@@ -122,6 +118,16 @@ const AlbumGrid = (props) => {
             </div>
         );
     };
+
+    if (itemsPerPage !== itemsPerPageFromURL) {
+        setItemsPerPage(itemsPerPageFromURL);
+        loadAllData();
+    }
+
+    if (offset !== offsetFromURL) {
+        setOffset(offsetFromURL);
+        loadAllData();
+    }
 
     return (
         <React.Fragment>
