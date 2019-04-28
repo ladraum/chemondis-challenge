@@ -1,18 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { withStyles } from '@material-ui/core/styles';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
 import TopMenu from '../Layout/TopMenu';
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+import DataLoaderService from '../DataLoader/DataLoaderService';
+import AlbumThumbnail from './AlbumThumbnail';
 
 const styles = theme => ({
     layout: {
@@ -28,17 +24,6 @@ const styles = theme => ({
     cardGrid: {
         padding: `${theme.spacing.unit * 8}px 0`,
     },
-    card: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    cardMedia: {
-        paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-        flexGrow: 1,
-    },
     progress: {
         margin: theme.spacing.unit * 2,
     },
@@ -51,12 +36,21 @@ const AlbumGrid = (props) => {
     const { classes } = props;
     const [isLoaded, setLoaded] = useState(false);
     const [hasErrors, setErrors] = useState(false);
+    const [albumList, setAlbumList] = useState([]);
+
+    useEffect(() => {
+        DataLoaderService.load('https://jsonplaceholder.typicode.com/albums?_start=0&_limit=5', setErrors)
+            .then(albumListFromServer => {
+                setAlbumList(albumListFromServer);
+                setLoaded(true);
+            });
+    }, [setErrors, setAlbumList]);
 
     const renderByState = () => {
         if (!isLoaded) {
             return loading();
         }
-        if (!hasErrors) {
+        if (hasErrors) {
             return showErrorsLoadingAlbuns();
         }
         return renderAlbumGrid();
@@ -85,23 +79,8 @@ const AlbumGrid = (props) => {
         return (
             <div className={classNames(classes.layout, classes.cardGrid)}>
                 <Grid container spacing={40}>
-                    {cards.map(card => (
-                        <Grid item key={card} sm={6} md={4} lg={3}>
-                            <Card className={classes.card}>
-                                <CardMedia
-                                    className={classes.cardMedia}
-                                    title="Image title"
-                                />
-                                <CardContent className={classes.cardContent}>
-                                    <Typography gutterBottom variant="h5" component="h2">
-                                        Heading
-                                    </Typography>
-                                    <Typography>
-                                        This is a media card. You can use this section to describe the content.
-                                    </Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                    {albumList.map(albumDetails => (
+                        <AlbumThumbnail key={albumDetails.id} albumDetails={albumDetails}/>
                     ))}
                 </Grid>
             </div>
