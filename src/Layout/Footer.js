@@ -9,8 +9,6 @@ import Input from '@material-ui/core/Input';
 import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
 import Pagination from "material-ui-flat-pagination";
 
-const ITEMS_PER_PAGE_PARAM = 'itemsPerPage';
-const OFFSET_PARAM = 'offset';
 const NUMBER_OF_ALBUNS = 100;
 
 const styles = theme => ({
@@ -26,8 +24,8 @@ const styles = theme => ({
 
 function Footer(props) {
     const { classes } = props;
-    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(ITEMS_PER_PAGE_PARAM) || 20;
-    const offsetFromURL = NavigationHelperService.getValueFromURL(OFFSET_PARAM) || 0;
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.ITEMS_PER_PAGE_PARAM) || 20;
+    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.OFFSET_PARAM) || 0;
 
     const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
     const [offset, setOffset] = useState(offsetFromURL);
@@ -43,12 +41,12 @@ function Footer(props) {
     const updateItemsPerPage = (event) => {
         let newItemsPerPage = event.target.value;
         setItemsPerPage(newItemsPerPage);
-        NavigationHelperService.applyParamToURL(ITEMS_PER_PAGE_PARAM, newItemsPerPage);
+        NavigationHelperService.applyParamToURL(NavigationHelperService.ITEMS_PER_PAGE_PARAM, newItemsPerPage);
     };
 
     const updateSelectedPage = (event, newOffset) => {
         setOffset(newOffset);
-        NavigationHelperService.applyParamToURL(OFFSET_PARAM, newOffset);
+        NavigationHelperService.applyParamToURL(NavigationHelperService.OFFSET_PARAM, newOffset);
     };
 
     return (

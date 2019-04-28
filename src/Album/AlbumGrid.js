@@ -12,6 +12,7 @@ import TopMenu from '../Layout/TopMenu';
 import DataLoaderService from '../DataLoader/DataLoaderService';
 import AlbumThumbnail from './AlbumThumbnail';
 import Footer from '../Layout/Footer';
+import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
 
 const styles = theme => ({
     layout: {
@@ -42,6 +43,22 @@ const AlbumGrid = (props) => {
     const [albumList, setAlbumList] = useState([]);
     const [userList, setUserList] = useState([]);
 
+
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.ITEMS_PER_PAGE_PARAM) || 20;
+    const offsetFromURL = NavigationHelperService.getValueFromURL(NavigationHelperService.OFFSET_PARAM) || 0;
+
+    const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
+    const [offset, setOffset] = useState(offsetFromURL);
+
+    if (itemsPerPage !== itemsPerPageFromURL) {
+        setItemsPerPage(itemsPerPageFromURL);
+    }
+
+    if (offset !== offsetFromURL) {
+        setOffset(offsetFromURL);
+    }
+
+
     useEffect(() => {
         loadUserList().then(loadAlbumList).finally(() => {
             setLoaded(true);
@@ -56,7 +73,7 @@ const AlbumGrid = (props) => {
     };
 
     const loadAlbumList = () => {
-        return DataLoaderService.load('https://jsonplaceholder.typicode.com/albums?_start=0&_limit=5', setErrors)
+        return DataLoaderService.load(`https://jsonplaceholder.typicode.com/albums?_start=${offset}&_limit=${itemsPerPage}`, setErrors)
             .then(albumListFromServer => {
                 setAlbumList(albumListFromServer);
             });

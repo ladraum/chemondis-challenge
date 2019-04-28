@@ -1,3 +1,7 @@
+const ITEMS_PER_PAGE_PARAM = 'itemsPerPage';
+const OFFSET_PARAM = 'offset';
+
+
 const getValueFromURL = (param) => {
     const hash = window.location.hash;
     const search = hash.split('?')[1];
@@ -15,4 +19,4 @@ const applyParamToURL = (param, newValue) => {
     window.location.hash = `${currentPage}?${urlParams.toString()}`;
 };
 
-export default { getValueFromURL, applyParamToURL };
+export default { getValueFromURL, applyParamToURL, ITEMS_PER_PAGE_PARAM, OFFSET_PARAM };
