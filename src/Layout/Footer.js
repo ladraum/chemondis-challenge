@@ -6,6 +6,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import Input from '@material-ui/core/Input';
+import NavigationHelperService from '../NavigationHelper/NavigationHelperService';
 
 const PATH_PARAM = 'itemsPerPage';
 
@@ -22,8 +23,19 @@ const styles = theme => ({
 
 function Footer(props) {
     const { classes } = props;
+    const itemsPerPageFromURL = NavigationHelperService.getValueFromURL(PATH_PARAM) || 20;
     
-    const [itemsPerPage, setItemsPerPage] = useState(20);
+    const [itemsPerPage, setItemsPerPage] = useState(itemsPerPageFromURL);
+
+    const updateItemsPerPage = (event) => {
+        let newItemsPerPage = event.target.value;
+        setItemsPerPage(newItemsPerPage);
+        NavigationHelperService.applyParamToURL(PATH_PARAM, newItemsPerPage);
+    };
+
+    if(itemsPerPage !== itemsPerPageFromURL) {
+        setItemsPerPage(itemsPerPageFromURL);
+    }
 
     return (
         <footer className={classes.footer}>
@@ -36,7 +48,7 @@ function Footer(props) {
                         <InputLabel htmlFor="age-native-helper">Items per page</InputLabel>
                         <NativeSelect
                             value={itemsPerPage}
-                            onChange={event => setItemsPerPage(event.target.value)}
+                            onChange={updateItemsPerPage}
                             input={<Input name="age" id="age-native-helper" />}
                         >
                             <option value={20}>20</option>
