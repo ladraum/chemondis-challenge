@@ -5,7 +5,7 @@ import AlbumThumbnail from './AlbumThumbnail';
 describe('AlbumThumbnail', () => {
   it('renders without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<AlbumThumbnail albumDetails={{}} />, div);
+    ReactDOM.render(<AlbumThumbnail albumDetails={{}} owner={{}} />, div);
     ReactDOM.unmountComponentAtNode(div);
   });
 });

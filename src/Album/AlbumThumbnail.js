@@ -29,10 +29,13 @@ const styles = theme => ({
 const AlbumThumbnail = (props) => {
     const { classes, albumDetails, owner } = props;
 
-    const getColorFromUserName = (str) => {
+    const getColorFromUserName = (userName) => {
+        if(!userName) {
+            return 'CCC';
+        }
         let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        for (let i = 0; i < userName.length; i++) {
+            hash = userName.charCodeAt(i) + ((hash << 5) - hash);
         }
         return hash;
     };
